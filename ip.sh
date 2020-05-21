@@ -12,7 +12,7 @@ echo "Allow All outgoing..."
 /sbin/iptables -I INPUT -i enp4s0 -m state --state ESTABLISHED,RELATED -j ACCEPT
 # Block All incoming
 echo "Block All incoming..."
-/sbin/iptables -A INPUT -j DROP
+/sbin/iptables -A INPUT -d 78.46.47.236/32 -j DROP
 
 # Exit if invalid IP address is returned
 case $DYNIP in
