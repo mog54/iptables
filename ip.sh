@@ -31,6 +31,19 @@ echo "it did NOT match, creating chain and rules..."
 /sbin/iptables -F $DYNHOST >/dev/null 2>&1
 /sbin/iptables -I $DYNHOST -s $DYNIP -p tcp --dport 22 -j ACCEPT
 /sbin/iptables -I $DYNHOST -s $DYNIP -p icmp -j ACCEPT
+# Allow incomming 9090/tcp from evrywhere
+echo "Allow incomming 9090/tcp from evrywhere..."
+/sbin/iptables -A INPUT -p tcp --dport 9090 -j ACCEPT
+# Allow All outgoing
+echo "Allow All outgoing..."
+/sbin/iptables -I OUTPUT -o enp4s0 -d 0.0.0.0/0 -j ACCEPT
+/sbin/iptables -I INPUT -i enp4s0 -m state --state ESTABLISHED,RELATED -j ACCEPT
+# Block All incoming
+echo "Block All incoming..."
+/sbin/iptables -A INPUT -j DROP
+
+
+
 
 # Add chain to INPUT filter if it doesn't exist
 if ! /sbin/iptables -C INPUT -t filter -j $DYNHOST >/dev/null 2>&1 ; then
