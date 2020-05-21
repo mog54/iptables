@@ -1,6 +1,14 @@
 # iptables
 
-smal script to create iptable rules to alow ssh & ping, if you have dyn ip you have to make a cron job tu run periodically
+smal script to create iptable rules to alow:
+
+-ssh from specific IP
+-ping from specific IP 
+-9090/tcp from evrywhere
+-all outgoing traffic
+
+and block all other incoming traffic.
+if you have dyn ip you have to make a cron job tu run periodically
 
 ## Usage
 
