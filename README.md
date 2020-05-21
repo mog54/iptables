@@ -2,8 +2,6 @@
 
 smal script to create iptable rules to alow ssh (or whatever), if you have dyn ip you have to make a cron job tu run periodically
 
-ex:
-
 ## Usage
 
 ```bash
