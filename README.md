@@ -9,7 +9,7 @@ smal script to create iptable rules to alow:
 ````
 
 and block all other incoming traffic.
-if you have dyn ip you have to make a cron job tu run periodically
+if you have dyn ip you have to make a cron job to run periodically
 
 ## Usage
 
