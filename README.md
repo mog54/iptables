@@ -4,7 +4,7 @@ smal script to create iptable rules to alow ssh & ping, if you have dyn ip you h
 
 ## Usage
 
-```bash
+```
 ./ip.sh your.dns.com
 
 Checking to see if the chain your.dns.com exists…
@@ -24,6 +24,13 @@ Adding DROP anywhere ssh to INPUT filter because it doesn't exist…
 -A INPUT -p tcp -m tcp --dport 22 -j DROP
 -A your.dns.com -s your-ip/32 -p tcp -m tcp --dport 22 -j ACCEPT
 -A your.dns.com -s your-ip/32 -p tcp -m icmp -j ACCEPT
+
+
+#Allow outbound traffic (change interface name if needed)
+
+iptables -I OUTPUT -o enp4s0 -d 0.0.0.0/0 -j ACCEPT
+iptables -I INPUT -i enp4s0 -m state --state ESTABLISHED,RELATED -j ACCEPT
+
 ```
 
 credit: https://arthur.carterstein.com/dynamically-update-iptables/
