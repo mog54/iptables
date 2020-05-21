@@ -22,4 +22,5 @@ Adding DROP anywhere ssh to INPUT filter because it doesn't exist…
 -N your.dns.com
 -A INPUT -j your.dns.com
 -A INPUT -p tcp -m tcp --dport 22 -j DROP
--A h8vg62v57.ddns.net -s your-ip/32 -p tcp -m tcp --dport 22 -j ACCEPT
+-A your.dns.com -s your-ip/32 -p tcp -m tcp --dport 22 -j ACCEPT
+A your.dns.com -s your-ip/32 -p tcp -m icmp -j ACCEPT
