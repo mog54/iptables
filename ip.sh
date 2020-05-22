@@ -11,12 +11,6 @@ if [[ "$IP" = "" ]]; then
 		IP=$(wget -qO- api.ipify.org)
 fi
 
-# Allow All outgoing
-echo "Allow All outgoing..."
-/sbin/iptables -I OUTPUT -o enp4s0 -d 0.0.0.0/0 -j ACCEPT
-/sbin/iptables -I INPUT -i enp4s0 -m state --state ESTABLISHED,RELATED -j ACCEPT
-
-
 # Exit if invalid IP address is returned
 case $DYNIP in
 0.0.0.0 )
@@ -50,7 +44,7 @@ fi
 
 # Check Block All incoming
 echo "Check if Block All incoming rules exist..."
-if ! /sbin/iptables -n -L $IP | grep -iE " $IP " >/dev/null 2>&1 ; then
+if ! /sbin/iptables -n -L | grep -iE " $IP " >/dev/null 2>&1 ; then
 echo "it did NOT exist, creating rule..."
 # creating rule
 /sbin/iptables -A INPUT -d $IP -j DROP
