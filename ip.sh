@@ -56,13 +56,6 @@ echo "it did NOT exist, creating rule..."
 /sbin/iptables -A INPUT -d $IP -j DROP
 fi
 
-
-
-
-
-
-
-
 # If chain for remote doesn't exist, create it
 echo "Checkng to see if the chain $DYNHOST exists..."
 if ! /sbin/iptables -L $DYNHOST -n >/dev/null 2>&1 ; then
