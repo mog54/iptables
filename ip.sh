@@ -3,16 +3,19 @@
 DYNHOST=$1
 DYNIP=$(host $DYNHOST | grep -iE "[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+" |cut -f4 -d' '|head -n 1)
 
-# Allow incomming 9090/tcp from evrywhere
-echo "Allow incomming 9090/tcp from evrywhere..."
-/sbin/iptables -A INPUT -p tcp --dport 9090 -j ACCEPT
+# Try to get our IP from the system and fallback to the Internet.
+# CHECK NAT
+IP=$(ip addr | grep 'inet' | grep -v inet6 | grep -vE '127\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}' | grep -o -E '[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}' | head -1)
+if [[ "$IP" = "" ]]; then
+		echo '1'
+		IP=$(wget -qO- api.ipify.org)
+fi
+
 # Allow All outgoing
 echo "Allow All outgoing..."
 /sbin/iptables -I OUTPUT -o enp4s0 -d 0.0.0.0/0 -j ACCEPT
 /sbin/iptables -I INPUT -i enp4s0 -m state --state ESTABLISHED,RELATED -j ACCEPT
-# Block All incoming
-echo "Block All incoming..."
-/sbin/iptables -A INPUT -d 78.46.47.236/32 -j DROP
+
 
 # Exit if invalid IP address is returned
 case $DYNIP in
@@ -26,6 +29,39 @@ esac
 if ! [[ $DYNIP =~ (([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25    [0-5]                                                 ) ]]; then
 exit 1
 fi
+
+# Check incomming 9090/tcp from evrywhere
+echo "Check if incomming 9090/tcp from evrywhere exist..."
+if ! /sbin/iptables -n -L | grep -iE " 9090P " >/dev/null 2>&1 ; then
+echo "it did NOT exist, creating rule..."
+# creating rule
+/sbin/iptables -A INPUT -p tcp --dport 9090 -j ACCEPT
+fi
+
+
+# Check Allow All outgoing
+echo "Check if Allow All outgoing exist..."
+if ! /sbin/iptables -n -L | grep -iE "ACCEPT" | grep -iE "0.0.0.0/0" | grep -iE "all" >/dev/null 2>&1 ; then
+echo "it did NOT exist, creating rule..."
+# creating rule
+/sbin/iptables -I OUTPUT -o enp4s0 -d 0.0.0.0/0 -j ACCEPT
+/sbin/iptables -I INPUT -i enp4s0 -m state --state ESTABLISHED,RELATED -j ACCEPT
+fi
+
+# Check Block All incoming
+echo "Check if Block All incoming rules exist..."
+if ! /sbin/iptables -n -L $IP | grep -iE " $IP " >/dev/null 2>&1 ; then
+echo "it did NOT exist, creating rule..."
+# creating rule
+/sbin/iptables -A INPUT -d $IP -j DROP
+fi
+
+
+
+
+
+
+
 
 # If chain for remote doesn't exist, create it
 echo "Checkng to see if the chain $DYNHOST exists..."
