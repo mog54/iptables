@@ -46,9 +46,12 @@ Adding DROP anywhere ssh to INPUT filter because it doesn't exist…
 iptables -I OUTPUT -o enp4s0 -d 0.0.0.0/0 -j ACCEPT
 iptables -I INPUT -i enp4s0 -m state --state ESTABLISHED,RELATED -j ACCEPT
 
+crontab -e
+0,5,10,15,20,25,30,35,40,45,50,55 * * * * /usr/local/bin/ip.sh syno.mog.ovh >/dev/null 2>&1
+
 ```
 
 credit: https://arthur.carterstein.com/dynamically-update-iptables/
 
-crontab -e
-0,5,10,15,20,25,30,35,40,45,50,55 * * * * /usr/local/bin/ip.sh syno.mog.ovh >/dev/null 2>&1
+
+
