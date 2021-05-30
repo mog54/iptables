@@ -30,6 +30,12 @@ if ! /sbin/iptables -n -L | grep -iE "9090" >/dev/null 2>&1 ; then
 echo "it did NOT exist, creating rule..."
 # creating rule
 /sbin/iptables -A INPUT -p tcp --dport 9090 -j ACCEPT
+/sbin/iptables -A INPUT -p tcp --dport 45000 -j LOG --log-level debug --log-prefix "45000/TCP "
+/sbin/iptables -A INPUT -p tcp --dport 45000 -j ACCEPT
+/sbin/iptables -A INPUT -p udp --dport 45000 -j LOG --log-level debug --log-prefix "45000/UDP "
+/sbin/iptables -A INPUT -p udp --dport 45000 -j ACCEPT
+/sbin/iptables -A INPUT -p tcp --dport 443 -m set --match-set CLOUDFLARE src -j LOG --log-level debug --log-prefix "HTTPS "
+/sbin/iptables -A INPUT -p tcp --dport 443 -m set --match-set CLOUDFLARE src -j ACCEPT
 fi
 
 
@@ -47,6 +53,7 @@ echo "Check if Block All incoming rules exist..."
 if ! /sbin/iptables -n -L | grep -iE " $IP " >/dev/null 2>&1 ; then
 echo "it did NOT exist, creating rule..."
 # creating rule
+/sbin/iptables -A INPUT -d $IP -j LOG --log-level debug --log-prefix "DENY "
 /sbin/iptables -A INPUT -d $IP -j DROP
 fi
 
@@ -65,6 +72,8 @@ echo "it did NOT match, creating chain and rules..."
 /sbin/iptables -F $DYNHOST >/dev/null 2>&1
 /sbin/iptables -I $DYNHOST -s $DYNIP -p tcp --dport 22 -j ACCEPT
 /sbin/iptables -I $DYNHOST -s $DYNIP -p icmp -j ACCEPT
+#/sbin/iptables -I $DYNHOST -s $DYNIP -p tcp --dport 111 -j ACCEPT
+
 
 # Add chain to INPUT filter if it doesn't exist
 if ! /sbin/iptables -C INPUT -t filter -j $DYNHOST >/dev/null 2>&1 ; then
